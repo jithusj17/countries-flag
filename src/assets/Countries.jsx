@@ -16,7 +16,7 @@ export default function Countries() {
         const res = await axios.get("https://xcountries-backend.labs.crio.do/all");
         setData(res.data);
       } catch (err) {
-        console.error("Error feteching data:", err);
+        console.error("Error fetching data:", err);
         setError("Failed to fetch countries. Please try again later."); 
       } finally {
         setLoading(false);
