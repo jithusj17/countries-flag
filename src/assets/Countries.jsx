@@ -5,19 +5,19 @@ import styles from "./Countries.module.css";
 export default function Countries() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // 👈 added error state
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchCountriesData = async () => {
       try {
         setLoading(true);
-        setError(null); // reset previous errors
+        setError(null); 
 
         const res = await axios.get("https://xcountries-backend.labs.crio.do/all");
         setData(res.data);
       } catch (err) {
         console.error("Error fetching countries data:", err);
-        setError("Failed to fetch countries. Please try again later."); // 👈 set error message
+        setError("Failed to fetch countries. Please try again later."); 
       } finally {
         setLoading(false);
       }
@@ -26,7 +26,7 @@ export default function Countries() {
     fetchCountriesData();
   }, []);
 
-  // ✅ UI Rendering
+ 
   if (loading) {
     return <p>Loading...</p>;
   }
