@@ -1,116 +1,73 @@
 import React, { useEffect, useState } from "react";
-
 import axios from "axios";
-
-import styles from "./Countries.module.css"
-
-
+import styles from "./Countries.module.css";
 
 export default function Countries() {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); // 👈 added error state
 
-    const [data, setData] = useState([]);
+  useEffect(() => {
+    const fetchCountriesData = async () => {
+      try {
+        setLoading(true);
+        setError(null); // reset previous errors
 
-    const [loading, setLoading] = useState(true);
+        const res = await axios.get("https://xcountries-backend.labs.crio.do/all");
+        setData(res.data);
+      } catch (err) {
+        console.error("Error fetching countries data:", err);
+        setError("Failed to fetch countries. Please try again later."); // 👈 set error message
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchCountriesData();
+  }, []);
 
+  // ✅ UI Rendering
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
-    useEffect(() => {
-
-        const fetchCountriesData = async () => {
-
-            try {
-
-                const res = await axios.get(`https://xcountries-backend.labs.crio.do/all`);
-
-                setData(res.data);
-
-                setLoading(false);
-
-            } catch (error) {
-
-                console.error('Error fetching countries data:', error);
-
-            }
-
-        };
-
-
-
-        fetchCountriesData();
-
-    }, []);
-
-
-
+  if (error) {
     return (
-
-        <>
-
-            {loading ? (
-
-                <p>Loading...</p>
-
-            ) : (
-
-                <>
-
-                <div>
-
-                    <h3>countries flags an thier names</h3>
-
-                </div>
-
-                    {data.length > 0 ? (
-
-                        <><div className={styles.card}>
-
-                            {data.map((country, index) => (
-
-                                <div key={index} >
-
-                                    {country.flag ? (
-
-                            <img
-
-                              src={country.flag}
-
-                           alt={`Flag of ${country.name}`}
-
-                         className={styles.img}
-
-                                         />
-
-): (
-
-                                        <p>No flag available for this country</p>
-
-                                    )}
-
-                                    <div><h2>{country.name}</h2></div>
-
-                                </div>
-
-                            ))}
-
-                         </div>   
-
-                        </>
-
-                    ) : (
-
-                        <p>No data available</p>
-
-                    )}
-
-                </>
-
-            )}
-
-        </>
-
+      <div className={styles.error}>
+        <p style={{ color: "red" }}>{error}</p>
+        <button onClick={() => window.location.reload()}>Retry</button>
+      </div>
     );
+  }
 
+  return (
+    <>
+      <div>
+        <h3>Countries Flags and Their Names</h3>
+      </div>
+
+      {data.length > 0 ? (
+        <div className={styles.card}>
+          {data.map((country, index) => (
+            <div key={index}>
+              {country.flag ? (
+                <img
+                  src={country.flag}
+                  alt={`Flag of ${country.name}`}
+                  className={styles.img}
+                />
+              ) : (
+                <p>No flag available for this country</p>
+              )}
+              <div>
+                <h2>{country.name}</h2>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p>No data available</p>
+      )}
+    </>
+  );
 }
-
-
-
